@@ -5,15 +5,14 @@ from ultralytics import YOLO
 from datetime import datetime
 import os
 
- 
-cam = cv.VideoCapture(0)
-mp_drawing = mp.solutions.drawing_utils
-mp_face_mesh = mp.solutions.face_mesh
-mp_drawing_styles = mp.solutions.drawing_styles
 
-drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
+cam = cv.VideoCapture(0)
+
+mp_face_mesh = mp.solutions.face_mesh
+
 mp_face = mp_face_mesh.FaceMesh(min_detection_confidence = 0.5, min_tracking_confidence = 0.5, refine_landmarks=True)
 
+                        #inner iris outer
 left_eye_landmark_list = [133, 468, 33]
 right_eye_landmark_list = [263, 473, 362]
 
@@ -42,7 +41,7 @@ def no_of_People(frame):
         face_count = len(result.boxes)
     if face_count>1:
         alert_Management(f"Number of faces detected: {face_count}",1)
-     if face_count == 0:
+    if face_count == 0:
         alert_Management("No person is detected", 1)
     
 def unwanted_objects(frame):
@@ -75,20 +74,18 @@ def alert_Management(message, code):
     
     cv.imwrite(f"Proof_images/{message} - {current_time}.png",frame)
 
-    
 
 while True:
     ret, frame = cam.read()
     frame = frame[: , ::-1]                     #Mirroring the image
     height, width, _ = frame.shape
-    frame.flags.writeable = False
 
     rgb_frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
     results = mp_face.process(rgb_frame)
 
-    frame.flags.writeable = True
-    frame = np.ascontiguousarray(frame)                          #Read about this!!!
+    frame = np.ascontiguousarray(frame)                          #Because we manipulated the image to mirror it
+    
     if results.multi_face_landmarks:
         landmarks = results.multi_face_landmarks[0]
         
@@ -96,8 +93,8 @@ while True:
             try:
                 if mark[0] in right_eye_landmark_list:                                  #--------------Right eye--------------
                     if mark[0] == right_eye_landmark_list[0]:            
-                        right_inner_x = int(mark[1].x * width)                                 #right innerouter x
-                        right_inner_y = int(mark[1].y * height)                                #right innerouter y
+                        right_inner_x = int(mark[1].x * width)                                 #right outer x
+                        right_inner_y = int(mark[1].y * height)                                #right outer y
                         cv.circle(frame, (right_inner_x,right_inner_y), 5, (0, 0, 255), -1)
                         
                     if mark[0] == right_eye_landmark_list[1]:                       
@@ -125,8 +122,8 @@ while True:
                         cv.circle(frame, (left_iris_x,left_iris_y), 5, (0, 0, 255), -1)
 
                     elif mark[0] == left_eye_landmark_list[2]:
-                        left_outer_x = int(mark[1].x * width)                                   #left outerinnerouter x
-                        left_outer_y = int(mark[1].y * height)                                  #left outerinnerouter y
+                        left_outer_x = int(mark[1].x * width)                                   #left outer x
+                        left_outer_y = int(mark[1].y * height)                                  #left outer y
                         cv.circle(frame, (left_outer_x,left_outer_y), 5, (0, 0, 255), -1)
 
                     # inner - outer
