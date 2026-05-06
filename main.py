@@ -41,7 +41,7 @@ def no_of_People(frame):
     for result in results:
         face_count = len(result.boxes)
     if face_count>1:
-        alert_Management(f"Number of faces detected: {face_count}")
+        alert_Management(f"Number of faces detected: {face_count}",1)
     
 def unwanted_objects(frame):
     model2 = YOLO("YOLOv26 COCO Dataset.pt") 
@@ -49,7 +49,7 @@ def unwanted_objects(frame):
     for result in results2:
         phones = len(result.boxes)
     if phones>0:
-        alert_Management("Phone detected")
+        alert_Management("Phone detected",2)
 
 try:
     os.mkdir("Proof_images")
@@ -138,8 +138,8 @@ while True:
     if(avg_ratio<0.4 or avg_ratio>0.6):
         alert_Management("Looking away!",0)
 
-    no_of_People(frame,1)
-    unwanted_objects(frame,2)
+    no_of_People(frame)
+    unwanted_objects(frame)
 
 
     cv.imshow("Webcam", frame)
