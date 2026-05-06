@@ -42,6 +42,8 @@ def no_of_People(frame):
         face_count = len(result.boxes)
     if face_count>1:
         alert_Management(f"Number of faces detected: {face_count}",1)
+     if face_count == 0:
+        alert_Management("No person is detected", 1)
     
 def unwanted_objects(frame):
     model2 = YOLO("YOLOv26 COCO Dataset.pt") 
